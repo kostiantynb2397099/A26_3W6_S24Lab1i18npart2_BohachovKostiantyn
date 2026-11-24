@@ -18,10 +18,10 @@
             </div>
         </div>
         <a class="p-2 border w-100 btn btn-warning px-3">
-            <i class="fa-solid fa-pen-to-square"></i>&nbsp;Show Detail Card
+            <i class="fa-solid fa-pen-to-square"></i>&nbsp;@Locals["Detail"]
         </a>
         <a class="p-2 border w-100 btn btn-info px-3" asp-controller="Zombie" asp-action="Edit" asp-route-Id="@Model.Id">
-            <i class="fa-solid fa-pen-to-square"></i>&nbsp;Edit
+            <i class="fa-solid fa-pen-to-square"></i>&nbsp;@Locals["Edit"]
         </a>
         <hr />
     </div>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using ZombieParty.Models;
 using ZombieParty.Models.Data;
 using ZombieParty.Utility;
@@ -13,14 +14,21 @@ namespace ZombieParty.Controllers
         private ZombiePartyDbContext _baseDonnees { get; set; }
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ZombieController(ZombiePartyDbContext baseDonnees, IWebHostEnvironment webHostEnvironment)
+        private readonly ILogger<ZombieController> _logger;
+        private readonly IStringLocalizer<ZombieController> _localizer;
+
+        public ZombieController(ZombiePartyDbContext baseDonnees, IWebHostEnvironment webHostEnvironment, ILogger<ZombieController> logger, IStringLocalizer<ZombieController> localizer)
         {
             _baseDonnees = baseDonnees;
             _webHostEnvironment = webHostEnvironment;
+            _logger = logger;
+            _localizer = localizer;
         }
 
         public async Task<IActionResult> Index()
         {
+            ViewData["Title"] = _localizer["IndexTitle"];
+
             List<Zombie> zombiesList = await _baseDonnees.Zombies.OrderBy(z => z.Name).Include(z => z.ZombieType).ToListAsync();
 
             return View(zombiesList);
@@ -62,6 +70,8 @@ namespace ZombieParty.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
+            ViewData["Title"] = _localizer["EditTitle"];
+
             ZombieVM zombieVM = new ZombieVM();
             zombieVM.Zombie = await _baseDonnees.Zombies.FindAsync(id);
             zombieVM.ZombieTypeSelectList = _baseDonnees.ZombieTypes.Select(t => new SelectListItem
@@ -77,6 +87,8 @@ namespace ZombieParty.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ZombieVM zombieVM)
         {
+            ViewData["Title"] = _localizer["EditTitle"];
+
             //Si le modèle est valide le zombie est modifié et nous sommes redirigé vers index.
             if (ModelState.IsValid)
             {
@@ -120,6 +132,8 @@ namespace ZombieParty.Controllers
 
         public IActionResult Create()
         {
+            ViewData["Title"] = _localizer["CreateTitle"];
+
             ZombieVM zombieVM = new ZombieVM();
             zombieVM.ZombieTypeSelectList = _baseDonnees.ZombieTypes.Select(t => new SelectListItem
             {
@@ -134,6 +148,8 @@ namespace ZombieParty.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ZombieVM zombieVM)
         {
+            ViewData["Title"] = _localizer["CreateTitle"];
+
             //Si le modèle est valide le zombie est ajouté et nous sommes redirigé vers index.
             if (ModelState.IsValid)
             {
