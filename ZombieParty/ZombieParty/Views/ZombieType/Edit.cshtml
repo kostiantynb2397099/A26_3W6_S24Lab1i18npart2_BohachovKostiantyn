@@ -4,7 +4,7 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input asp-for="@Model.Id" class="form-control" hidden />
         <div class="form-group row">
-            <h2 class="text-info pl-3">Edit Zombie Type</h2>
+            <h2 class="text-info pl-3">@Locals["Title"]</h2>
             <hr />
         </div>
 
@@ -12,7 +12,7 @@
             <div class="col-8">
                 <div class="form-group row">
                     <div class="col-2">
-                        <label asp-for="TypeName" class="col-form-label"></label>
+                        @Locals["Name"]
                     </div>
                     <div class="col-8">
                         <input asp-for="TypeName" class="form-control" />
@@ -22,7 +22,7 @@
 
                 <div class="form-group row">
                     <div class="col-2">
-                        <label asp-for="Point" class="col-form-label"></label>
+                        @Locals["Point"]
                     </div>
                     <div class="col-8">
                         <input asp-for="Point" class="form-control" />
@@ -33,10 +33,10 @@
                 <div class="form-group row py-2">
                     <div class="col-8 offset-2 row">
                         <div class="col">
-                            <button type="submit" class="btn btn-info w-100" value="Edit"><i class="fa-solid fa-pen-to-square"></i>&nbsp;Edit</button>
+                            <button type="submit" class="btn btn-info w-100" value="Edit"><i class="fa-solid fa-pen-to-square"></i>&nbsp;@Locals["Edit"]</button>
                         </div>
                         <div class="col">
-                            <a asp-controller="ZombieType" asp-action="Index" class="btn btn-success w-100"><i class="fa-solid fa-circle-arrow-left"></i>&nbsp;Back to list</a>
+                            <a asp-controller="ZombieType" asp-action="Index" class="btn btn-success w-100"><i class="fa-solid fa-circle-arrow-left"></i>&nbsp;@Locals["BackToList"]</a>
                         </div>
                     </div>
                 </div>

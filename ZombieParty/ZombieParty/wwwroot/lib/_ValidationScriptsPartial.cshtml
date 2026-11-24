@@ -1,0 +1,58 @@
+﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<!-- cldr scripts (needed for globalize) -->
+<script src="~/lib/cldrjs/cldr.js"></script>
+<script src="~/lib/cldrjs/cldr/event.js"></script>
+<script src="~/lib/cldrjs/cldr/supplemental.js"></script>
+
+<!-- globalize scripts -->
+<script src="~/lib/globalize/globalize.js"></script>
+<script src="~/lib/globalize/globalize/number.js"></script>
+<script src="~/lib/globalize/globalize/date.js"></script>
+<script src="~/lib/jquery-validation-globalize/jquery.validate.globalize.js"></script>
+
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostingEnvironment
+@{
+    string GetDefaultLocale()
+    {
+        var currentCulture = System.Globalization.CultureInfo.CurrentCulture;
+        var exactPath = System.IO.Path.Combine(HostingEnvironment.WebRootPath, "lib", "cldr-data", "main", currentCulture.Name);
+        var neutralPath = System.IO.Path.Combine(HostingEnvironment.WebRootPath, "lib", "cldr-data", "main", currentCulture.TwoLetterISOLanguageName);
+
+        // Verify both folder AND numbers.json exist
+        if (System.IO.File.Exists(System.IO.Path.Combine(exactPath, "numbers.json")))
+            return currentCulture.Name;
+        if (System.IO.File.Exists(System.IO.Path.Combine(neutralPath, "numbers.json")))
+            return currentCulture.TwoLetterISOLanguageName;
+
+        return "en";
+    }
+}
+
+<script type="text/javascript">
+    var culture = "@GetDefaultLocale()";
+    var basePath = '@Url.Content("~/lib/cldr-data/")';
+
+    $.when(
+        $.get(basePath + "supplemental/likelySubtags.json"),
+        $.get(basePath + "main/" + culture + "/numbers.json"),
+        $.get(basePath + "supplemental/numberingSystems.json"),
+        $.get(basePath + "main/" + culture + "/ca-gregorian.json"),
+        $.get(basePath + "main/" + culture + "/timeZoneNames.json"),
+        $.get(basePath + "supplemental/timeData.json"),
+        $.get(basePath + "supplemental/weekData.json")
+    ).then(function() {
+        return [].slice.apply(arguments, [0]).map(function(result) {
+            return result[0];
+        });
+    }).then(Globalize.load).then(function() {
+        Globalize.locale(culture);
+
+        // Re-apply unobtrusive validation now that Globalize is loaded
+        $("form").removeData("validator").removeData("unobtrusiveValidation");
+        $.validator.unobtrusive.parse("form");
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.error("Failed to load CLDR data for culture '" + culture + "':", textStatus, errorThrown);
+    });
+</script>
